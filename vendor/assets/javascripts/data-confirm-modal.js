@@ -157,18 +157,20 @@
                 '</div>'
               );
       modal.find('.modal-title').text(options.title || settings.title);
+    }
 
-      var body = modal.find('.modal-body');
+    var body = modal.find('.modal-body');
+    var commit = modal.find('.commit');
+    var cancel = modal.find('.cancel');
 
+    if (modalTemplate.length == 0) {
       $.each((options.text||'').split(/\n{2}/), function (i, piece) {
         body.append($('<p/>').html(piece));
       });
 
-      var commit = modal.find('.commit');
       commit.text(options.commit || settings.commit);
       commit.addClass(options.commitClass || settings.commitClass);
 
-      var cancel = modal.find('.cancel');
       cancel.text(options.cancel || settings.cancel);
       cancel.addClass(options.cancelClass || settings.cancelClass);
     }
