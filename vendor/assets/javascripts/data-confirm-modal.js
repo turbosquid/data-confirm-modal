@@ -137,7 +137,7 @@
 
     var modal = '';
     if (modalTemplate.length > 0) {
-      modal = modalTemplate;
+      modal = $(modalTemplate);
       modal.find('#confirmModalID').attr('id', id);
     } else {
       modal = $(
