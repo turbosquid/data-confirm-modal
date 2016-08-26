@@ -22,6 +22,10 @@
    *  * `data-focus`:   Define focused input. Supported values are
    *                    'cancel' or 'commit', 'cancel' is default for
    *                    data-method DELETE, 'commit' for all others.
+   *  * `data-modal-template`:  Markup used for modal. Requires an element id for
+   *                            the modal (#confirmModalID). A unique id will be
+   *                            injected and all other modal style customizations
+   *                            will be ignored.
    *
    * You can set global setting using `dataConfirmModal.setDefaults`, for example:
    *
@@ -91,23 +95,24 @@
 
   var buildElementModal = function (element) {
     var options = {
-      title:        element.attr('title') || element.data('original-title'),
-      text:         element.data('confirm'),
-      focus:        element.data('focus'),
-      method:       element.data('method'),
-      modalClass:   element.data('modal-class'),
-      commit:       element.data('commit'),
-      commitClass:  element.data('commit-class'),
-      cancel:       element.data('cancel'),
-      cancelClass:  element.data('cancel-class'),
-      remote:       element.data('remote'),
-      verify:       element.data('verify'),
-      verifyRegexp: element.data('verify-regexp'),
-      verifyLabel:  element.data('verify-text'),
+      title:         element.attr('title') || element.data('original-title'),
+      text:          element.data('confirm'),
+      focus:         element.data('focus'),
+      method:        element.data('method'),
+      modalClass:    element.data('modal-class'),
+      commit:        element.data('commit'),
+      commitClass:   element.data('commit-class'),
+      cancel:        element.data('cancel'),
+      cancelClass:   element.data('cancel-class'),
+      remote:        element.data('remote'),
+      verify:        element.data('verify'),
+      verifyRegexp:  element.data('verify-regexp'),
+      verifyLabel:   element.data('verify-text'),
       verifyRegexpCaseInsensitive: element.data('verify-regexp-caseinsensitive'),
-      backdrop:     element.data('backdrop'),
-      keyboard:     element.data('keyboard'),
-      show:         element.data('show')
+      backdrop:      element.data('backdrop'),
+      keyboard:      element.data('keyboard'),
+      show:          element.data('show'),
+      modalTemplate: element.data('modal-template')
     };
 
     var modal = buildModal(options);
@@ -123,27 +128,50 @@
   }
 
   var buildModal = function (options) {
+    var modalTemplate = options.modalTemplate ? options.modalTemplate : ''
     var id = 'confirm-modal-' + String(Math.random()).slice(2, -1);
+
     var fade = settings.fade ? 'fade' : '';
     var modalClass = options.modalClass ? options.modalClass : settings.modalClass;
 
-    var modal = $(
-      '<div id="'+id+'" class="modal '+fade+' '+modalClass+'" tabindex="-1" role="dialog" aria-labelledby="'+id+'Label" aria-hidden="true">' +
-        '<div class="modal-dialog">' +
-          '<div class="modal-content">' +
-            '<div class="modal-header">' +
-              '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-              '<h4 id="'+id+'Label" class="modal-title"></h4> ' +
-            '</div>' +
-            '<div class="modal-body"></div>' +
-            '<div class="modal-footer">' +
-              '<button class="btn cancel" data-dismiss="modal" aria-hidden="true"></button>' +
-              '<button class="btn commit"></button>' +
-            '</div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'
-    );
+    var modal = '';
+    if (modalTemplate.length > 0) {
+      modal = modalTemplate;
+      modal.find('#confirmModalID').attr('id', id);
+    } else {
+      modal = $(
+                '<div id="'+id+'" class="modal '+fade+' '+modalClass+'" tabindex="-1" role="dialog" aria-labelledby="'+id+'Label" aria-hidden="true">' +
+                  '<div class="modal-dialog">' +
+                    '<div class="modal-content">' +
+                      '<div class="modal-header">' +
+                        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                        '<h4 id="'+id+'Label" class="modal-title"></h4> ' +
+                      '</div>' +
+                      '<div class="modal-body"></div>' +
+                      '<div class="modal-footer">' +
+                        '<button class="btn cancel" data-dismiss="modal" aria-hidden="true"></button>' +
+                        '<button class="btn commit"></button>' +
+                      '</div>'+
+                    '</div>'+
+                  '</div>'+
+                '</div>'
+              );
+      modal.find('.modal-title').text(options.title || settings.title);
+
+      var body = modal.find('.modal-body');
+
+      $.each((options.text||'').split(/\n{2}/), function (i, piece) {
+        body.append($('<p/>').html(piece));
+      });
+
+      var commit = modal.find('.commit');
+      commit.text(options.commit || settings.commit);
+      commit.addClass(options.commitClass || settings.commitClass);
+
+      var cancel = modal.find('.cancel');
+      cancel.text(options.cancel || settings.cancel);
+      cancel.addClass(options.cancelClass || settings.cancelClass);
+    }
 
     // Make sure it's always the top zindex
     var highest = current = settings.zIndex;
@@ -155,21 +183,6 @@
     });
     modal.css('z-index', parseInt(highest) + 1);
 
-    modal.find('.modal-title').text(options.title || settings.title);
-
-    var body = modal.find('.modal-body');
-
-    $.each((options.text||'').split(/\n{2}/), function (i, piece) {
-      body.append($('<p/>').html(piece));
-    });
-
-    var commit = modal.find('.commit');
-    commit.text(options.commit || settings.commit);
-    commit.addClass(options.commitClass || settings.commitClass);
-
-    var cancel = modal.find('.cancel');
-    cancel.text(options.cancel || settings.cancel);
-    cancel.addClass(options.cancelClass || settings.cancelClass);
 
     if (options.remote) {
       commit.attr('data-dismiss', 'modal');
