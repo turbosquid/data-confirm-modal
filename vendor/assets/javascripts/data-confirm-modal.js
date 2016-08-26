@@ -22,6 +22,7 @@
    *  * `data-focus`:   Define focused input. Supported values are
    *                    'cancel' or 'commit', 'cancel' is default for
    *                    data-method DELETE, 'commit' for all others.
+   *  * `data-close-markup`:   Custom close arkup to be used instead of standard close
    *
    * You can set global setting using `dataConfirmModal.setDefaults`, for example:
    *
@@ -31,6 +32,7 @@
    *      cancel: 'Cancel',
    *      fade:   false,
    *      verifyClass: 'form-control',
+   *      closeMarkup: '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">#</button>'
    *    });
    *
    */
@@ -47,7 +49,8 @@
     focus: 'commit',
     zIndex: 1050,
     modalClass: false,
-    show: true
+    show: true,
+    closeMarkup: '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'
   };
 
   var settings;
@@ -107,7 +110,8 @@
       verifyRegexpCaseInsensitive: element.data('verify-regexp-caseinsensitive'),
       backdrop:     element.data('backdrop'),
       keyboard:     element.data('keyboard'),
-      show:         element.data('show')
+      show:         element.data('show'),
+      closeMarkup:  element.data('close-markup')
     };
 
     var modal = buildModal(options);
@@ -132,7 +136,7 @@
         '<div class="modal-dialog">' +
           '<div class="modal-content">' +
             '<div class="modal-header">' +
-              '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+              closeMarkup +
               '<h4 id="'+id+'Label" class="modal-title"></h4> ' +
             '</div>' +
             '<div class="modal-body"></div>' +
