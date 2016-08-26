@@ -51,7 +51,8 @@
     focus: 'commit',
     zIndex: 1050,
     modalClass: false,
-    show: true
+    show: true,
+    modalTemplate: ''
   };
 
   var settings;
@@ -128,7 +129,7 @@
   }
 
   var buildModal = function (options) {
-    var modalTemplate = options.modalTemplate ? options.modalTemplate : ''
+    var modalTemplate = options.modalTemplate ? options.modalTemplate : settings.modalTemplate;
     var id = 'confirm-modal-' + String(Math.random()).slice(2, -1);
 
     var fade = settings.fade ? 'fade' : '';
@@ -163,15 +164,15 @@
     var commit = modal.find('.commit');
     var cancel = modal.find('.cancel');
 
+    commit.text(options.commit || settings.commit);
+    cancel.text(options.cancel || settings.cancel);
+
     if (modalTemplate.length == 0) {
       $.each((options.text||'').split(/\n{2}/), function (i, piece) {
         body.append($('<p/>').html(piece));
       });
 
-      commit.text(options.commit || settings.commit);
       commit.addClass(options.commitClass || settings.commitClass);
-
-      cancel.text(options.cancel || settings.cancel);
       cancel.addClass(options.cancelClass || settings.cancelClass);
     }
 
