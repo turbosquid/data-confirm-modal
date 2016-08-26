@@ -130,6 +130,7 @@
     var id = 'confirm-modal-' + String(Math.random()).slice(2, -1);
     var fade = settings.fade ? 'fade' : '';
     var modalClass = options.modalClass ? options.modalClass : settings.modalClass;
+    var closeMarkup = options.closeMarkup ? options.closeMarkup : settings.closeMarkup;
 
     var modal = $(
       '<div id="'+id+'" class="modal '+fade+' '+modalClass+'" tabindex="-1" role="dialog" aria-labelledby="'+id+'Label" aria-hidden="true">' +
